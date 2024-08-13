@@ -199,7 +199,7 @@ class InputQty extends StatefulWidget {
 
 class _InputQtyState extends State<InputQty> {
   /// text controller of textfield
-  late TextEditingController _valCtrl;
+  late TextEditingController valCtrl;
 
   /// current value of quantity
   late ValueNotifier<num?> currentval;
@@ -214,8 +214,8 @@ class _InputQtyState extends State<InputQty> {
   void initState() {
     super.initState();
     currentval = ValueNotifier(widget.initVal);
-    _valCtrl = widget.qtyFormProps.controller ?? TextEditingController();
-    _valCtrl.text = "${widget.initVal}";
+    valCtrl = widget.qtyFormProps.controller ?? TextEditingController();
+    valCtrl.text = "${widget.initVal}";
     if (widget._outputType != _OutputType.integer) {
       stepDecimalPlace = countDecimalPlaces(widget.steps);
     }
@@ -228,7 +228,7 @@ class _InputQtyState extends State<InputQty> {
   /// then firstly, it set the [value]= [initVal],
   /// after that [value] += [steps]
   void plus() {
-    num value = num.tryParse(_valCtrl.text) ?? widget.initVal;
+    num value = num.tryParse(valCtrl.text) ?? widget.initVal;
     int decimalpl = 0;
     if (widget._outputType == _OutputType.integer) {
       value += widget.steps;
@@ -256,7 +256,7 @@ class _InputQtyState extends State<InputQty> {
     }
 
     /// set back to the controller
-    _valCtrl.text = value.toStringAsFixed(decimalpl);
+    valCtrl.text = value.toStringAsFixed(decimalpl);
     currentval.value = value;
     widget.onQtyChanged?.call(value);
   }
@@ -278,7 +278,7 @@ class _InputQtyState extends State<InputQty> {
   /// then firstly, it set the [value]= [initVal],
   /// after that [value] -= [steps]
   void minus() {
-    num value = num.tryParse(_valCtrl.text) ?? widget.initVal;
+    num value = num.tryParse(valCtrl.text) ?? widget.initVal;
     // value -= widget.steps;
     int decimalpl = 0;
 
@@ -306,7 +306,7 @@ class _InputQtyState extends State<InputQty> {
     }
 
     /// set back to the controller
-    _valCtrl.text = value.toStringAsFixed(decimalpl);
+    valCtrl.text = value.toStringAsFixed(decimalpl);
     currentval.value = value;
     widget.onQtyChanged?.call(value);
   }
@@ -463,7 +463,7 @@ class _InputQtyState extends State<InputQty> {
   Widget _buildtextfield() => TextFormField(
         decoration: decorationProps(),
         onTapOutside: (event) => FocusManager.instance.primaryFocus?.unfocus(),
-        controller: _valCtrl,
+        controller: valCtrl,
         readOnly: !widget.qtyFormProps.enableTyping,
         autovalidateMode: AutovalidateMode.onUserInteraction,
         validator: (val) => widget.validator?.call(num.tryParse(val ?? '')),
@@ -486,18 +486,18 @@ class _InputQtyState extends State<InputQty> {
         onChanged: (String strVal) {
           if (widget._outputType == _OutputType.integer &&
               strVal.contains('.')) {
-            _valCtrl.text = '${currentval.value}';
-            _valCtrl.selection = TextSelection.fromPosition(
-                TextPosition(offset: _valCtrl.text.length));
+            valCtrl.text = '${currentval.value}';
+            valCtrl.selection = TextSelection.fromPosition(
+                TextPosition(offset: valCtrl.text.length));
             return;
           }
           // avoid parsing value
           if (strVal.isEmpty || strVal == '-') return;
           num? temp = num.tryParse(strVal);
           if (temp == null) {
-            _valCtrl.text = '${currentval.value}';
-            _valCtrl.selection = TextSelection.fromPosition(
-                TextPosition(offset: _valCtrl.text.length));
+            valCtrl.text = '${currentval.value}';
+            valCtrl.selection = TextSelection.fromPosition(
+                TextPosition(offset: valCtrl.text.length));
             return;
           }
           switch (widget._outputType) {
@@ -516,11 +516,11 @@ class _InputQtyState extends State<InputQty> {
           if (temp >= widget.maxVal) {
             temp = widget.maxVal;
 
-            _valCtrl.text = "$temp";
+            valCtrl.text = "$temp";
           } else if (temp < widget.minVal) {
             temp = widget.minVal;
 
-            _valCtrl.text = "$temp";
+            valCtrl.text = "$temp";
           }
           widget.onQtyChanged?.call(temp);
           currentval.value = temp;
@@ -545,7 +545,7 @@ class _InputQtyState extends State<InputQty> {
 
   @override
   void dispose() {
-    _valCtrl.dispose();
+    valCtrl.dispose();
     currentval.dispose();
     super.dispose();
   }
